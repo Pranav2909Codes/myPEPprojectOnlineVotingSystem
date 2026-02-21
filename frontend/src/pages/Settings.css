@@ -1,0 +1,138 @@
+.settings-container {
+    padding: 2rem 0;
+}
+
+.settings-header {
+    margin-bottom: 2.5rem;
+}
+
+.settings-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+.settings-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem !important;
+}
+
+.settings-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-align: left;
+    transition: var(--transition-fast);
+}
+
+.settings-nav-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-main);
+}
+
+.settings-nav-item.active {
+    background: rgba(56, 189, 248, 0.1);
+    color: var(--primary);
+}
+
+.settings-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.settings-section h2 {
+    font-size: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.profile-edit {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.avatar-large {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: var(--bg-dark);
+    border: 2px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.edit-avatar {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    border: none;
+    color: white;
+    font-size: 0.7rem;
+    padding: 0.25rem 0;
+    font-weight: 600;
+}
+
+.profile-inputs {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: white;
+    outline: none;
+    font-family: inherit;
+    resize: vertical;
+}
+
+textarea:focus {
+    border-color: var(--primary);
+}
+
+.section-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.security-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.security-item h4 {
+    margin-bottom: 0.25rem;
+}
+
+.security-item p {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.settings-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+}
