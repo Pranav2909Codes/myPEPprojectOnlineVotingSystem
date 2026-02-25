@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 import User from '../models/User.js';
 
 const protect = async (req, res, next) => {
@@ -10,19 +11,23 @@ const protect = async (req, res, next) => {
     ) {
         try {
             token = req.headers.authorization.split(' ')[1];
+            const secret = process.env.JWT_SECRET || 'dev-secret';
+            const decoded = jwt.verify(token, secret);
 
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-            req.user = await User.findById(decoded.id).select('-password');
+            // Only check DB if connected
+            if (mongoose.connection.readyState === 1) {
+                req.user = await User.findById(decoded.id).select('-password');
+            } else {
+                // Dev mode: store token payload in req.user
+                req.user = { _id: decoded.id };
+            }
 
             next();
         } catch (error) {
-            console.error(error);
+            console.error('Auth error:', error.message);
             res.status(401).json({ message: 'Not authorized, token failed' });
         }
-    }
-
-    if (!token) {
+    } else if (!token) {
         res.status(401).json({ message: 'Not authorized, no token' });
     }
 };

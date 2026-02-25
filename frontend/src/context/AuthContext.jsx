@@ -14,14 +14,22 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
     }, []);
 
+    const API = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+
     const login = async (email, password) => {
-        const response = await fetch('/api/auth/login', {
+        const response = await fetch(`${API}/api/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password }),
         });
 
-        const data = await response.json();
+        let data;
+        try {
+            data = await response.json();
+        } catch (e) {
+            const text = await response.text();
+            return { success: false, message: text || 'Server error' };
+        }
 
         if (response.ok) {
             localStorage.setItem('userInfo', JSON.stringify(data));
@@ -33,13 +41,19 @@ export const AuthProvider = ({ children }) => {
     };
 
     const register = async (name, email, password, role = 'user') => {
-        const response = await fetch('/api/auth/register', {
+        const response = await fetch(`${API}/api/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, email, password, role }),
         });
 
-        const data = await response.json();
+        let data;
+        try {
+            data = await response.json();
+        } catch (e) {
+            const text = await response.text();
+            return { success: false, message: text || 'Server error' };
+        }
 
         if (response.ok) {
             localStorage.setItem('userInfo', JSON.stringify(data));

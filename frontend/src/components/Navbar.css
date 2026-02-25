@@ -85,3 +85,40 @@
 .logout-btn:hover {
     color: var(--danger);
 }
+
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0.5rem 0;
+    }
+
+    .navbar-links {
+        display: none;
+    }
+
+    .navbar-content {
+        gap: 1rem;
+    }
+
+    .navbar-logo {
+        font-size: 1.25rem;
+    }
+
+    .navbar-logo span {
+        display: none;
+    }
+
+    .navbar-user {
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .user-profile name {
+        display: none;
+    }
+
+    .avatar {
+        width: 32px;
+        height: 32px;
+    }
+}
