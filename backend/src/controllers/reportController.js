@@ -1,9 +1,7 @@
 import Poll from '../models/Poll.js';
 import User from '../models/User.js';
 
-// @desc    Get voting summary for all polls
-// @route   GET /api/reports/summary
-// @access  Private/Admin
+
 const getVotingSummary = async (req, res) => {
     try {
         const totalPolls = await Poll.countDocuments();
@@ -36,9 +34,7 @@ const getVotingSummary = async (req, res) => {
     }
 };
 
-// @desc    Get live feed of recent poll creation
-// @route   GET /api/reports/feed
-// @access  Private
+
 const getPollFeed = async (req, res) => {
     try {
         const recentPolls = await Poll.find({})

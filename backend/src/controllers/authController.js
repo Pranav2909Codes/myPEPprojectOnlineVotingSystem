@@ -1,9 +1,7 @@
 import User from '../models/User.js';
 import generateToken from '../utils/generateToken.js';
 
-// @desc    Register a new user
-// @route   POST /api/auth/register
-// @access  Public
+
 const registerUser = async (req, res) => {
     const { name, email, password, role } = req.body;
 
@@ -33,9 +31,6 @@ const registerUser = async (req, res) => {
     }
 };
 
-// @desc    Auth user & get token
-// @route   POST /api/auth/login
-// @access  Public
 const authUser = async (req, res) => {
     const { email, password } = req.body;
 
@@ -54,4 +49,26 @@ const authUser = async (req, res) => {
     }
 };
 
-export { registerUser, authUser };
+
+const getUsers = async (req, res) => {
+    const users = await User.find({});
+    res.json(users);
+};
+
+
+const deleteUser = async (req, res) => {
+    const user = await User.findById(req.params.id);
+
+    if (user) {
+        if (user.role === 'admin') {
+            res.status(400).json({ message: 'Cannot delete admin user' });
+            return;
+        }
+        await user.deleteOne();
+        res.json({ message: 'User removed' });
+    } else {
+        res.status(404).json({ message: 'User not found' });
+    }
+};
+
+export { registerUser, authUser, getUsers, deleteUser };

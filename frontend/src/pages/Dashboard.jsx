@@ -29,28 +29,36 @@ const Dashboard = () => {
     }, [user.token]);
 
     const stats = [
-        { label: 'Active Polls', value: summary?.activePolls || '0', icon: <Vote size={24} />, color: 'var(--primary)' },
-        { label: 'Total Users', value: summary?.totalUsers || '0', icon: <Users size={24} />, color: 'var(--secondary)' },
-        { label: 'Total Votes', value: summary?.totalVotes || '0', icon: <PieChart size={24} />, color: 'var(--accent)' },
-        { label: 'Polls Closing', value: '3', icon: <Clock size={24} />, color: '#f59e0b' },
+        { label: 'Active Elections', value: summary?.activePolls || '0', icon: <Vote size={24} />, color: 'var(--primary)' },
+        { label: 'Registered Voters', value: summary?.totalUsers || '0', icon: <Users size={24} />, color: 'var(--secondary)' },
+        { label: 'Total Votes Cast', value: summary?.totalVotes || '0', icon: <PieChart size={24} />, color: 'var(--accent)' },
+        {
+            label: 'Closing Soon',
+            value: summary?.pollStats
+                ? summary.pollStats.filter(p => p.status === 'active').length
+                : '0',
+            icon: <Clock size={24} />,
+            color: '#f59e0b',
+        },
     ];
 
-    const recentPolls = [
-        { id: 1, title: 'Annual Project Budget 2026', author: 'Admin', votes: 156, status: 'Active' },
-        { id: 2, title: 'New Employee Health Benefits', author: 'HR', votes: 89, status: 'Active' },
-        { id: 3, title: 'Office Relocation Survey', author: 'Ops', votes: 432, status: 'Closed' },
-    ];
+    const recentPolls = summary?.pollStats || [];
 
     return (
         <div className="container dashboard-container">
             <header className="dashboard-header">
                 <div>
                     <h1>Welcome, {user.name}!</h1>
-                    <p>Here's what's happening with the voting system today.</p>
+                    <p>Review live election activity and jump straight into voting.</p>
                 </div>
 
-                <button className="btn btn-primary" onClick={() => navigate('/polls')}>
-                    Create New Poll
+                <button
+                    className="btn btn-primary"
+                    onClick={() =>
+                        user.role === 'admin' ? navigate('/admin/panel') : navigate('/polls')
+                    }
+                >
+                    {user.role === 'admin' ? 'Open Admin Panel' : 'Go to Ballot'}
                 </button>
 
             </header>
@@ -72,18 +80,24 @@ const Dashboard = () => {
             <div className="dashboard-main">
                 <section className="recent-activity">
                     <div className="section-header">
-                        <h2>Active Polls</h2>
-                        <a href="/online-voting" className="view-all">View All <ArrowUpRight size={16} /></a>
+                        <h2>Active Elections</h2>
+                        <button
+                            type="button"
+                            className="link-button"
+                            onClick={() => navigate('/polls')}
+                        >
+                            View all elections <ArrowUpRight size={16} />
+                        </button>
                     </div>
                     <div className="poll-list">
-                        {recentPolls.map(poll => (
+                        {recentPolls.map((poll) => (
                             <div key={poll.id} className="card poll-item">
                                 <div className="poll-content">
                                     <h3>{poll.title}</h3>
                                     <div className="poll-meta">
-                                        <span>by {poll.author}</span>
+                                        <span>Status: {poll.status}</span>
                                         <span className="separator">•</span>
-                                        <span>{poll.votes} votes so far</span>
+                                        <span>{poll.totalVotes} total votes</span>
                                     </div>
                                 </div>
                                 <div className="poll-action">
@@ -92,6 +106,9 @@ const Dashboard = () => {
                                 </div>
                             </div>
                         ))}
+                        {recentPolls.length === 0 && (
+                            <div className="empty-state">No elections created yet.</div>
+                        )}
                     </div>
                 </section>
 

@@ -1,8 +1,6 @@
 import Poll from '../models/Poll.js';
 
-// @desc    Create a new poll
-// @route   POST /api/online
-// @access  Private/Admin
+
 const createPoll = async (req, res) => {
     const { title, description, options, endDate } = req.body;
 
@@ -18,17 +16,26 @@ const createPoll = async (req, res) => {
     res.status(201).json(createdPoll);
 };
 
-// @desc    Get all polls
-// @route   GET /api/online
-// @access  Private
+
 const getPolls = async (req, res) => {
     const polls = await Poll.find({}).populate('createdBy', 'name');
-    res.json(polls);
+
+    // Enrich polls with a flag indicating if the current user has already voted
+    const userId = req.user?._id?.toString();
+    const enriched = userId
+        ? polls.map((poll) => {
+              const doc = poll.toObject();
+              const hasVoted =
+                  Array.isArray(doc.votedBy) &&
+                  doc.votedBy.some((voterId) => voterId.toString() === userId);
+              return { ...doc, hasVoted };
+          })
+        : polls;
+
+    res.json(enriched);
 };
 
-// @desc    Get poll by ID
-// @route   GET /api/online/:id
-// @access  Private
+
 const getPollById = async (req, res) => {
     const poll = await Poll.findById(req.params.id).populate('createdBy', 'name');
 
@@ -39,9 +46,7 @@ const getPollById = async (req, res) => {
     }
 };
 
-// @desc    Update a poll
-// @route   PUT /api/online/:id
-// @access  Private/Admin
+
 const updatePoll = async (req, res) => {
     const { title, description, status, endDate } = req.body;
 
@@ -60,9 +65,7 @@ const updatePoll = async (req, res) => {
     }
 };
 
-// @desc    Delete a poll
-// @route   DELETE /api/online/:id
-// @access  Private/Admin
+
 const deletePoll = async (req, res) => {
     const poll = await Poll.findById(req.params.id);
 
@@ -74,30 +77,42 @@ const deletePoll = async (req, res) => {
     }
 };
 
-// @desc    Vote in a poll
-// @route   POST /api/online/:id/vote
-// @access  Private
+
 const voteInPoll = async (req, res) => {
     const { optionId } = req.body;
 
     const poll = await Poll.findById(req.params.id);
 
-    if (poll) {
-        if (poll.status === 'closed' || new Date() > new Date(poll.endDate)) {
-            return res.status(400).json({ message: 'Poll is closed' });
-        }
-
-        const option = poll.options.id(optionId);
-        if (option) {
-            option.votes += 1;
-            await poll.save();
-            res.json({ message: 'Vote registered' });
-        } else {
-            res.status(404).json({ message: 'Option not found' });
-        }
-    } else {
-        res.status(404).json({ message: 'Poll not found' });
+    if (!poll) {
+        return res.status(404).json({ message: 'Poll not found' });
     }
+
+    // Prevent voting on closed/expired polls
+    if (poll.status === 'closed' || new Date() > new Date(poll.endDate)) {
+        return res.status(400).json({ message: 'Poll is closed' });
+    }
+
+    // Enforce one-vote-per-user
+    const userId = req.user._id.toString();
+    const alreadyVoted =
+        Array.isArray(poll.votedBy) &&
+        poll.votedBy.some((voterId) => voterId.toString() === userId);
+
+    if (alreadyVoted) {
+        return res.status(400).json({ message: 'You have already voted in this poll' });
+    }
+
+    const option = poll.options.id(optionId);
+    if (!option) {
+        return res.status(404).json({ message: 'Option not found' });
+    }
+
+    option.votes += 1;
+    poll.votedBy = poll.votedBy || [];
+    poll.votedBy.push(req.user._id);
+
+    await poll.save();
+    res.json({ message: 'Vote registered' });
 };
 
 export { createPoll, getPolls, getPollById, updatePoll, deletePoll, voteInPoll };

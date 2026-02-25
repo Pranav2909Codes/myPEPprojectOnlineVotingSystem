@@ -31,6 +31,12 @@ const pollSchema = mongoose.Schema(
             type: Date,
             required: true,
         },
+        votedBy: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User',
+            },
+        ],
     },
     {
         timestamps: true,

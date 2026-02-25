@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, LogIn, ArrowRight } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Vote } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import './Auth.css';
 
-const Login = () => {
+const VoterLogin = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -21,29 +21,14 @@ const Login = () => {
             const result = await login(email, password);
 
             if (result.success) {
-                const stored = localStorage.getItem('userInfo');
-                let destination = '/dashboard';
-
-                if (stored) {
-                    try {
-                        const parsed = JSON.parse(stored);
-                        if (parsed.role === 'admin') {
-                            destination = '/admin/panel';
-                        } else {
-                            destination = '/polls';
-                        }
-                    } catch {
-                        // fall back to default
-                    }
-                }
-
-                navigate(destination);
+                // After a successful voter login, go straight to the ballot
+                navigate('/polls');
             } else {
                 setError(result.message || 'Failed to login');
             }
         } catch (err) {
             setError('An unexpected error occurred.');
-            console.error('Login error:', err);
+            console.error('Voter login error:', err);
         } finally {
             setLoading(false);
         }
@@ -53,8 +38,11 @@ const Login = () => {
         <div className="auth-container">
             <div className="auth-card glass">
                 <div className="auth-header">
-                    <h1>Welcome Back</h1>
-                    <p>Login to your account to start voting</p>
+                    <div className="auth-header-icon">
+                        <Vote size={28} />
+                    </div>
+                    <h1>Voter Login</h1>
+                    <p>Sign in to access your secure online ballot</p>
                 </div>
 
                 <form className="auth-form" onSubmit={handleSubmit}>
@@ -66,7 +54,7 @@ const Login = () => {
                             <input
                                 type="email"
                                 id="email"
-                                placeholder="name@example.com"
+                                placeholder="voter@example.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
@@ -89,26 +77,21 @@ const Login = () => {
                         </div>
                     </div>
 
-                    <div className="auth-options">
-                        <label className="checkbox-label">
-                            <input type="checkbox" />
-                            <span>Remember me</span>
-                        </label>
-                        <Link to="/forgot-password">Forgot password?</Link>
-                    </div>
-
                     <button type="submit" className="btn btn-primary auth-btn" disabled={loading}>
-                        <span>{loading ? 'Logging in...' : 'Login Now'}</span>
+                        <span>{loading ? 'Logging in...' : 'Go to Ballot'}</span>
                         {!loading && <ArrowRight size={20} />}
                     </button>
                 </form>
 
                 <div className="auth-footer">
-                    <p>Don't have an account? <Link to="/register">Register now</Link></p>
+                    <p>
+                        Need an account? <Link to="/register">Register as a voter</Link>
+                    </p>
                 </div>
             </div>
         </div>
     );
 };
 
-export default Login;
+export default VoterLogin;
+

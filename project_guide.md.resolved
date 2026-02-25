@@ -1,0 +1,87 @@
+# Online Voting System: Comprehensive Project Guide
+
+This guide provides a detailed walkthrough of the project's architecture, file naming conventions, and the logic within each module.
+
+---
+
+## 1. Project Overview
+The **Online Voting System** is a full-stack application built using the **MERN** stack (MongoDB, Express, React, Node.js).
+- **Backend**: Handles API requests, database interactions, and security.
+- **Frontend**: Provides a modern, responsive user interface for voting and administration.
+
+---
+
+## 2. File Naming Conventions
+
+Consistency is key to a clean codebase. We follow these specific naming patterns:
+
+### Backend
+- **Controllers & Routes**: `camelCase.js` (e.g., [authController.js](file:///Users/pranavvishwakarma/Desktop/voting_system/backend/src/controllers/authController.js), [authRoutes.js](file:///Users/pranavvishwakarma/Desktop/voting_system/backend/src/routes/authRoutes.js))
+- **Models**: `PascalCase.js` (e.g., [User.js](file:///Users/pranavvishwakarma/Desktop/voting_system/backend/src/models/User.js))
+- **Configs/Utils**: `camelCase.js` (e.g., `db.js`, `generateToken.js`)
+
+### Frontend
+- **Components & Pages**: `PascalCase.jsx` (e.g., [Dashboard.jsx](file:///Users/pranavvishwakarma/Desktop/voting_system/frontend/src/pages/Dashboard.jsx))
+- **Styles**: `PascalCase.css` (matching its component, e.g., [Dashboard.css](file:///Users/pranavvishwakarma/Desktop/voting_system/frontend/src/pages/Dashboard.css))
+- **Context/Hooks**: `PascalCase.jsx` for Context, `camelCase.js` for Hooks.
+
+---
+
+## 3. Folder Structure Breakdown
+
+### Backend (`/backend/src`)
+| Folder | Purpose |
+| :--- | :--- |
+| `config/` | Database and environment configurations. |
+| `controllers/` | Contains the logic for processing requests (The "Brain"). |
+| `models/` | Defines the structure of data in MongoDB (The "Skeleton"). |
+| `routes/` | Maps URLs to specific controller functions. |
+| `middleware/` | Code that runs before the controller (e.g., Auth checks). |
+| `utils/` | Shared helper functions (e.g., JWT generation). |
+
+### Frontend (`/frontend/src`)
+| Folder | Purpose |
+| :--- | :--- |
+| `assets/` | Static files like images and icons. |
+| `components/` | Small, reusable UI parts like `Navbar` or `Buttons`. |
+| `context/` | Global state (e.g., `AuthContext` to know who is logged in). |
+| `pages/` | Entire screen views like `Login`, `Dashboard`, and `Voting`. |
+
+---
+
+## 4. Understanding the Content
+
+### A. The Backend Entry: `server.js`
+[server.js](file:///Users/pranavvishwakarma/Desktop/voting_system/backend/server.js) is the starting point. It initializes Express, connects to MongoDB, and registers all API routes.
+> [!NOTE]
+> All API routes are prefixed with `/api` (e.g., `/api/auth/login`).
+
+### B. Data Models (The "What")
+Files like [User.js](file:///Users/pranavvishwakarma/Desktop/voting_system/backend/src/models/User.js) define what a "User" looks like (name, email, encrypted password).
+- We use **Mongoose** to interact with MongoDB.
+- We use **Bcrypt** for password hashing to ensure security.
+
+### C. Controllers (The "How")
+[authController.js](file:///Users/pranavvishwakarma/Desktop/voting_system/backend/src/controllers/authController.js) contains functions like `registerUser` and `authUser`.
+- It takes data from `req.body`.
+- It interacts with the `Model` to find or save data.
+- It returns a JSON response to the Frontend.
+
+### D. Frontend Navigation: `App.jsx`
+[App.jsx](file:///Users/pranavvishwakarma/Desktop/voting_system/frontend/src/App.jsx) is the router. It defines which component to show based on the URL.
+- We use `ProtectedRoute` to ensure only logged-in users can see the `Dashboard`.
+
+---
+
+## 5. Typical Data Flow
+1. **Frontend**: User clicks "Login" on `Login.jsx`.
+2. **Frontend**: `fetch('/api/auth/login', { body: ... })` is called.
+3. **Backend Route**: `authRoutes.js` receives the POST request and passes it to `authController.authUser`.
+4. **Backend Controller**: Finds the user in MongoDB using [User.js](file:///Users/pranavvishwakarma/Desktop/voting_system/backend/src/models/User.js).
+5. **Backend Controller**: Verifies password and returns a JWT (token).
+6. **Frontend**: Receives the token, saves it in `AuthContext`, and redirects to `/dashboard`.
+
+---
+
+> [!TIP]
+> Always check [package.json](file:///Users/pranavvishwakarma/Desktop/voting_system/backend/package.json) to see the list of dependencies and scripts like `npm start`.

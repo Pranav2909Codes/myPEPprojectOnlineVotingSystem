@@ -37,10 +37,16 @@ const Navbar = () => {
                         <span>Reports</span>
                     </Link>
                     {user.role === 'admin' && (
-                        <Link to="/admin" className="nav-item admin-link">
-                            <Settings size={20} />
-                            <span>Admin</span>
-                        </Link>
+                        <>
+                            <Link to="/admin/panel" className="nav-item admin-link">
+                                <Settings size={20} />
+                                <span>Election Admin</span>
+                            </Link>
+                            <Link to="/admin" className="nav-item">
+                                <Settings size={20} />
+                                <span>User Admin</span>
+                            </Link>
+                        </>
                     )}
                 </div>
 
